@@ -1,21 +1,32 @@
-import { Button, Flex, Image, Text } from '@chakra-ui/react';
-import React from 'react';
-import { useSignInWithGoogle } from "react-firebase-hooks/auth";
-import { auth } from "@/src/firebase/clientApp";
+import { Button, Flex, Image, Text } from "@chakra-ui/react";
+import React from "react";
+import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { auth } from "../../../firebase/clientApp";
+import { FirebaseErrors } from '@/src/firebase/errors'
 
-const OAuthButtons: React.FC = () => {
+type OAuthButtonsProps = {};
 
-  const [singInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+const OAuthButtons: React.FC<OAuthButtonsProps> = () => {
+  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
 
   return (
-    <Flex direction="column" width="100%" mb={4}>
-      <Button variant="oauth" mb={2} isLoading={loading} onClick={() => singInWithGoogle()}>
+    <Flex direction="column" mb={4} width="100%">
+      <Button
+        variant="oauth"
+        mb={2}
+        onClick={() => signInWithGoogle()}
+      // isLoading={loading}
+      >
         <Image src="/images/googlelogo.png" height="20px" mr={4} />
         Continue with Google
       </Button>
       <Button variant="oauth">Some Other Provider</Button>
-      {error && <Text color="red">{error}</Text>}
-    </Flex >
-  )
-}
+      {error && (
+        <Text textAlign="center" fontSize="10pt" color="red" mt={2}>
+          {FirebaseErrors[error?.message as keyof typeof FirebaseErrors]}
+        </Text>
+      )}
+    </Flex>
+  );
+};
 export default OAuthButtons;
